@@ -1,6 +1,6 @@
 {
   "name": "creme",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Creme is a simple API for creating and managing DOM elements, built on top of Google's Incremental DOM.",
   "keywords": ["creme", "incremental-dom", "incremental dom", "dom", "sugar"],
   "main": "index.js",
