@@ -1,0 +1,143 @@
+var creme = require('../index');
+var expect = require('expectacle');
+
+describe('Creating Elements', function() {
+
+  var target = null;
+
+  beforeEach(function() {
+    target = document.createElement('div');
+  });
+
+  afterEach(function() {
+    target = null;
+  });
+
+
+  it('should create a single element', function() {
+    var div = creme.div();
+    div.patchInto(target);
+    expect(target.firstChild.tagName).toBe('DIV');
+  });
+
+  it('should create an element with a child.', function() {
+    var div = creme.div(creme.p());
+    div.patchInto(target);
+    expect(target.firstChild.tagName).toBe('DIV');
+    expect(target.firstChild.firstChild.tagName).toBe('P');
+  });
+
+  it('should create an element with children.', function() {
+    var div = creme.div([
+      creme.p(),
+      creme.p()
+    ]);
+    div.patchInto(target);
+    expect(target.firstChild.tagName).toBe('DIV');
+    expect(target.firstChild.firstChild.tagName).toBe('P');
+    expect(target.firstChild.lastChild.tagName).toBe('P');
+  });
+
+  it('should add regular attributes to an element', function() {
+    var div = creme.div({'class': 'test'});
+    div.patchInto(target);
+    expect(target.firstChild.getAttribute('class')).toBe('test');
+  });
+
+  it('should add static attributes to an element', function() {
+    var div = creme.div({
+      $key: 'test',
+      $static: {
+        'class': 'test'
+      }
+    });
+    div.patchInto(target);
+    expect(target.firstChild.getAttribute('class')).toBe('test');
+  });
+
+  it('should throw a type error when setting static attributes without a $key', function() {
+    expect(function() {
+      var div = creme.div({
+        $static: {
+          'class': 'test'
+        }
+      });
+      div.patchInto(target);
+    }).toThrow(TypeError);
+  });
+
+  it('should call computed attribute functions', function() {
+    var div = creme.div({
+      $computed: {
+        'class': function() {
+          return 'testing'
+        }
+      }
+    });
+    div.patchInto(target);
+    expect(target.firstChild.getAttribute('class')).toBe('testing');
+  });
+
+  it('should pass the data when calling a computed attribute', function() {
+    var div = creme.div({
+      $computed: {
+        'class': function(data) {
+          if (!data) {
+            return 'testing'
+          }
+          return data.className;
+        }
+      }
+    });
+    div.patchInto(target, {className: 'test-class'});
+    expect(target.firstChild.getAttribute('class')).toBe('test-class');
+  });
+
+  it('should create a text for text children', function() {
+    var div = creme.div('Hello');
+    div.patchInto(target);
+    expect(target.firstChild.firstChild.nodeType).toBe(target.TEXT_NODE);
+    expect(target.firstChild.firstChild.textContent).toBe('Hello');
+  });
+
+  it('should call a function that is passed as a child', function() {
+    var div = creme.div(function() {
+      return 'Hello';
+    });
+    div.patchInto(target);
+    expect(target.firstChild.firstChild.nodeType).toBe(target.TEXT_NODE);
+    expect(target.firstChild.firstChild.textContent).toBe('Hello');
+  });
+
+  it('should render an element returned from a function', function() {
+    var div = creme.div(function() {
+      return creme.p();
+    });
+    div.patchInto(target);
+    expect(target.firstChild.firstChild.tagName).toBe('P');
+  });
+
+  it('should recursively call functions returned from a function', function() {
+    var div = creme.div(function() {
+      return function() {
+        return 'Hello';
+      };
+    });
+    div.patchInto(target);
+    expect(target.firstChild.firstChild.nodeType).toBe(target.TEXT_NODE);
+    expect(target.firstChild.firstChild.textContent).toBe('Hello');
+  });
+
+  it('should pass the data object from patchTo into a child function', function() {
+    var div = creme.div(function(data) {
+      if (!data) {
+        return 'fail'
+      }
+      return data.type;
+    });
+    div.patchInto(target, {type: 'pass'});
+    expect(target.firstChild.firstChild.nodeType).toBe(target.TEXT_NODE);
+    expect(target.firstChild.firstChild.textContent).toBe('pass');
+  });
+
+});
