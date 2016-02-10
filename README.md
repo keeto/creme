@@ -27,7 +27,7 @@ var Greeting = creme.div({
 Greeting.patchInto(document.body, {name: 'Mark', username: 'keeto'});
 
 /*
-Produces:
+Renders:
 
 <div id="greeting" data-lang="en">
   <h1>Welcome!</h1>
@@ -160,7 +160,7 @@ var greeting = creme.div([
 
 greeting.patchInto(document.body, {name: null});
 /*
-Produces:
+Renders:
 
 <div>
   <h1>Welcome!</h1>
@@ -169,7 +169,27 @@ Produces:
 */
 ```
 
-Functions can return strings, `CremeElement` instances and even more functions.
+Functions can return strings, `CremeElement` instances and even more functions. Returning an array from the function will render each of the elements inside the array.
+
+```js
+var myList = creme.ul(function(data) {
+  return data.todos.map(function(todo, index) {
+    return creme.li({$key: index.toString()}, todo);
+  });
+});
+
+myList.patchInto(document.body, {
+  todos: ['Walk the dog.', 'Get milk.']
+})
+/*
+Renders:
+<ul>
+  <li>Walk the dog.</li>
+  <li>Get milk.</li>
+</ul>
+*/
+
+```
 
 ## Interpolation
 
@@ -196,7 +216,7 @@ div.patchInto(document.body, {
   }
 });
 /*
-Produces:
+Renders:
 
 <div class="user-info">
   <p>Your name is Keeto.</p>

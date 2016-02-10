@@ -140,4 +140,20 @@ describe('Creating Elements', function() {
     expect(target.firstChild.firstChild.textContent).toBe('pass');
   });
 
+  it('should render a list of items.', function() {
+    var todos = ['Walk the dog.', 'Get milk.'];
+    var ul = creme.ul(function(data) {
+      return data.todos.map(function(todo, index) {
+        return creme.li({$key: index.toString()}, todo);
+      });
+    });
+
+    ul.patchInto(target, {todos: todos})
+    expect(target.firstChild.tagName).toBe('UL');
+    expect(target.firstChild.firstChild.tagName).toBe('LI');
+    expect(target.firstChild.firstChild.textContent).toBe(todos[0]);
+    expect(target.firstChild.lastChild.tagName).toBe('LI');
+    expect(target.firstChild.lastChild.textContent).toBe(todos[1]);
+  });
+
 });
