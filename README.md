@@ -1,13 +1,9 @@
-Creme
+Crème
 =====
 
-Creme is a simple API for creating and managing DOM elements, built on top of Google's Incremental DOM.
+Creme is a simple API for creating and managing DOM elements, built on top of Google's [Incremental DOM](https://github.com/google/incremental-dom).
 
-## Installation
-
-```sh
-$ npm install --save creme
-```
+Creme works by encapsulating the Incremental DOM's rendering functions (e.g., `elementVoid`, `elementOpen`, `patch`, etc.) inside `CremeElement` objects, allowing users to express structure in a more hierarchical manner.
 
 ## Example
 
@@ -19,26 +15,37 @@ var Greeting = creme.div({
   'data-lang': 'en'
 }, [
   creme.h1('Welcome!'),
-  creme.p(
-    creme.interpolate('Hello {name}!')
-  )
+  creme.p(creme.interpolate('Hello {name}!')),
+  function(data) {
+    if (data.username) {
+      return creme.p('Your username is ' + data.username);
+    }
+    return creme.p('We don\'t know your username!');
+  }
 ])
 
-Greeting.patchInto(document.body, {name: 'World'});
+Greeting.patchInto(document.body, {name: 'Mark', username: 'keeto'});
 
 /*
 Produces:
 
 <div id="greeting" data-lang="en">
   <h1>Welcome!</h1>
-  <p>Hello World!</p>
+  <p>Hello Mark!</p>
+  <p>Your username is keeto</p>
 </div>
 */
 ```
 
-## Elements
+## Installation
 
-Creme's main abstraction is the `Element`, which is an object that contains properties and children. For example, you can create a `div` `Element` like so:
+```sh
+$ npm install --save creme
+```
+
+## CremeElements
+
+Creme's main abstraction is the `CremeElement`, which is an object that contains properties and children. For example, you can create a `div` `CremeElement` like so:
 
 ```js
 var creme = require('creme');
@@ -57,7 +64,7 @@ var myDiv = creme.div('Hello World');
 myDiv.patchInto(document.body);
 ```
 
-## Creating Custom Element Factories
+## Creating Custom CremeElement Factories
 
 You can create a factory an element using the `createElement` function. The following example creates the same `creme.div` function above:
 
@@ -65,7 +72,7 @@ You can create a factory an element using the `createElement` function. The foll
 // createElement(tagName, isVoid) -> function(attribs, children)
 
 var createElement = require('creme/lib/create_element');
-var div = creme.createElement('div', false);
+var div = createElement('div', false);
 
 var element = div('Hello World');
 ```
@@ -75,11 +82,11 @@ var element = div('Hello World');
 All element factories take in two optional arguments:
 
 ```
-elementFactory(attributes, children) -> Element
+elementFactory(attributes, children) -> CremeElement
 ```
 
 - `attributes` is key-value map describing the attributes and properties of the element.
-- `children` could either be a string (representing a text node), an `Element` created from a factory, or an array containing a mixture of both strings and `Element` instances.
+- `children` could either be a string (representing a text node), an `CremeElement` created from a factory, or an array containing a mixture of both strings and `CremeElement` instances.
 
 ### Special Attributes
 
@@ -122,7 +129,7 @@ myInput.patchInto(document.body, {confirmed: false});
 
 Aside from `$computed` attributes, you can also have computed children for your elements.
 
-Aside from strings, `Element` instances and arrays, the `children` parameter element factories can also take in functions. These functions are similar to the functions for `$computed` properties, and are called during rendering time with the data that was passed with `patchInto`.
+Aside from strings, `CremeElement` instances and arrays, the `children` parameter element factories can also take in functions. These functions are similar to the functions for `$computed` properties, and are called during rendering time with the data that was passed with `patchInto`.
 
 ```js
 var greeting = creme.div(
@@ -151,7 +158,33 @@ var greeting = creme.div([
 greeting.patchInto(document.body, {name: null});
 ```
 
-Functions can return strings, `Element` instances and even more functions.
+Functions can return strings, `CremeElement` instances and even more functions.
+
+## Interpolation
+
+String interpolation is a common usecase for render-time functions. Creme has a helper interpolation module that creates an interpolator function so you don't have to write one yourself:
+
+```js
+var creme = require('creme');
+var interpolate = require('creme/lib/interpolate');
+
+var div = creme.div({
+  $computed: {
+    'class': interpolate('{className}')
+  }
+}, [
+  creme.p(interpolate('Your name is {user.name}.')),
+  creme.p(interpolate('You are {user.age} years old.'))
+]);
+
+div.patchInto(document.body, {
+  className: 'user-info',
+  user: {
+    name: 'Keeto',
+    age: 23
+  }
+})
+```
 
 ## About
 
