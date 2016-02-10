@@ -104,6 +104,9 @@ var myInput = creme.input({
   },
   disabled: true
 });
+
+// Renders <div type="text" disabled="true"></div>
+myInput.patchInto(document.body);
 ```
 
 The third special attribute is `$computed`, which is a key-value map of properties that will be computed during rendering time.
@@ -156,6 +159,14 @@ var greeting = creme.div([
 ]);
 
 greeting.patchInto(document.body, {name: null});
+/*
+Produces:
+
+<div>
+  <h1>Welcome!</h1>
+  <p>Hello visitor! Welcome to the site!</p>
+</div>
+*/
 ```
 
 Functions can return strings, `CremeElement` instances and even more functions.
@@ -183,7 +194,15 @@ div.patchInto(document.body, {
     name: 'Keeto',
     age: 23
   }
-})
+});
+/*
+Produces:
+
+<div class="user-info">
+  <p>Your name is Keeto.</p>
+  <p>You are 23 years old.</p>
+</div>
+*/
 ```
 
 ## About
