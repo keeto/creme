@@ -66,6 +66,12 @@ describe('Creating Elements', function() {
     }).toThrow(TypeError);
   });
 
+  it('should set the id property of an element using $id', function() {
+    var div = creme.div({$id: 'test'});
+    div.patchInto(target);
+    expect(target.firstChild.getAttribute('id')).toBe('test');
+  });
+
   it('should call computed attribute functions', function() {
     var div = creme.div({
       $computed: {

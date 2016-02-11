@@ -11,7 +11,7 @@ Creme works by encapsulating the Incremental DOM's rendering functions (e.g., `e
 var creme = require('creme');
 
 var Greeting = creme.div({
-  $static: {id: 'greeting'},
+  $id: 'greeting',
   'data-lang': 'en'
 }, [
   creme.h1('Welcome!'),
@@ -109,7 +109,23 @@ var myInput = creme.input({
 myInput.patchInto(document.body);
 ```
 
-The third special attribute is `$computed`, which is a key-value map of properties that will be computed during rendering time.
+The third special attribute is `$id`. Since it's a common usecase to set the `id` property of an element as a `$static` attribute and as the value for `$key`, you can use the `$id` attribute to combine these two. The following declarations are similar:
+
+```js
+// Using $key and $static separately
+var div = creme.div({
+  $key: 'my-id'
+  $static: {
+    id: 'my-id'
+  }
+});
+
+var div = creme.div({
+  $id: 'my-id'
+})
+```
+
+The last special attribute is `$computed`, which is a key-value map of properties that will be computed during rendering time.
 
 ```js
 var myInput = creme.input({
