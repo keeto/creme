@@ -1,8 +1,14 @@
 {
   "name": "creme",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Creme is a simple API for creating and managing DOM elements, built on top of Google's Incremental DOM.",
-  "keywords": ["creme", "incremental-dom", "incremental dom", "dom", "sugar"],
+  "keywords": [
+    "creme",
+    "incremental-dom",
+    "incremental dom",
+    "dom",
+    "sugar"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "karma start --single-run"
@@ -24,6 +30,6 @@
     "phantomjs-prebuilt": "^2.1.4"
   },
   "dependencies": {
-    "incremental-dom": "^0.3.0"
+    "incremental-dom": "^0.4.1"
   }
 }
