@@ -92,9 +92,11 @@ elementFactory(attributes, children) -> CremeElement
 
 When passing an object for the `attributes` argument, most of the fields are passed directly to the underlying Incremental DOM implementation. Creme, however, allows you to specify three special properties that affect how your element gets patched into a container.
 
-The first one is `$key`, which is used as a unique identifier for the element. Incremental DOM uses this value during its diff-ing process.
+#### `$key` and `$static`
 
-The second one is `$static`, which is a key-value map of the static properties of an element. The value of these properties never change in-between renderings. Setting this attribute requires you to pass a `$key` as well.
+The `$key` special attribute is used as a unique identifier for the element. Incremental DOM uses this value during its diff-ing process.
+
+The `$static` special attribute must be key-value map of the static properties of an element. The value of these properties never change in-between renderings. Setting this attribute requires you to pass a `$key` as well.
 
 ```js
 var myInput = creme.input({
@@ -109,7 +111,62 @@ var myInput = creme.input({
 myInput.patchInto(document.body);
 ```
 
-The third special attribute is `$id`. Since it's a common usecase to set the `id` property of an element as a `$static` attribute and as the value for `$key`, you can use the `$id` attribute to combine these two. The following declarations are similar:
+#### `$events`
+
+The `$events` attribute can be used to attach event listeners to the element. Internally, it calls `addEventListener` on the element.
+
+```js
+var myInput = creme.input({
+  $events: {
+    focus: function(e) {
+      // do something
+    },
+    blur: function(e) {
+      // do something
+    }
+  }
+});
+```
+
+If you need to add multiple event listeners, you can pass an array of listeners:
+
+```js
+var myButton = creme.button({
+  $events: {
+    click: [
+      function(e) {
+        // Do something
+      },
+      function(e) {
+        // Do something else
+      }
+    ]
+  }
+});
+```
+
+#### `$ref`
+
+The special attribute `$ref`--when set to `true`--enables you to access a special property on `CremeElement` instances called `node`, which is a reference to the actual DOM node that was created.
+
+The `node` property is dynamic: when your element is rendered, this property is updated to point to the rendered node. If your element is removed, this property is set to `null`. For elements without the `$ref` or `$id` attributes (see below), this will always be set to `null`.
+
+Because the actual DOM element can change in between renderings, you should *not* store the value of the `node` property. Instead, it is adviced to access the property everytime you need to use it.
+
+```js
+var myButton = creme.button({
+  $ref: true
+});
+
+
+myButton.patchInto(document.body);
+
+myButton.node; // <button>
+```
+
+#### `$id`
+
+Since it's a common usecase to set the `id` property of an element as a `$static` attribute and as the value for `$key`, you can use the `$id` attribute to combine these two. The following declarations are similar:
 
 ```js
 // Using $key and $static separately
@@ -125,7 +182,22 @@ var div = creme.div({
 })
 ```
 
-The last special attribute is `$computed`, which is a key-value map of properties that will be computed during rendering time.
+The `$id` attribute also automatically sets the `$ref` attribute to `true`:
+
+```js
+var myButton = creme.button({
+  $id: 'my-button'
+});
+
+
+myButton.patchInto(document.body);
+
+myButton.node; // <button>
+```
+
+#### `$computed`
+
+The `$computed` special attribute is a key-value map of properties that will be computed during rendering time.
 
 ```js
 var myInput = creme.input({
