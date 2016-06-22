@@ -66,10 +66,26 @@ describe('Creating Elements', function() {
     }).toThrow(TypeError);
   });
 
+  it('should expose a non-null node value if the the item has a $ref attribute', function() {
+    var div = creme.div({
+      $ref: true
+    });
+    div.patchInto(target);
+    expect(div.node).not.toBe(null);
+  });
+
   it('should set the id property of an element using $id', function() {
     var div = creme.div({$id: 'test'});
     div.patchInto(target);
     expect(target.firstChild.getAttribute('id')).toBe('test');
+  });
+
+  it('should expose a non-null node value if the the item has an $id', function() {
+    var div = creme.div({
+      $id: true
+    });
+    div.patchInto(target);
+    expect(div.node).not.toBe(null);
   });
 
   it('should call computed attribute functions', function() {
