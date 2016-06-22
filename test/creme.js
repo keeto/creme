@@ -178,4 +178,17 @@ describe('Creating Elements', function() {
     expect(target.firstChild.lastChild.textContent).toBe(todos[1]);
   });
 
+  it('should add events to an element.', function(done) {
+    var item = creme.div({
+      $ref: true,
+      $events: {
+        click: function(e) {
+          done();
+        }
+      }
+    });
+    item.patchInto(target);
+    item.node.click();
+  });
+
 });
